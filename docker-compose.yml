@@ -1,0 +1,35 @@
+version: "3"
+services:
+  eureka-peer-1:
+    image: $RELEASE_IMAGE
+    environment:
+      SPRING_PROFILES_ACTIVE: peer
+      LOGGING_MODE: logstash
+      DEPLOY_HOST: eureka-peer-1
+      EUREKA_SERVER_LIST: http://eureka-peer-2:8761/eureka/
+    ports:
+      - 8761:8761
+    networks:
+      - tpam
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  eureka-peer-2:
+    image: $RELEASE_IMAGE
+    environment:
+      SPRING_PROFILES_ACTIVE: peer
+      LOGGING_MODE: logstash
+      DEPLOY_HOST: eureka-peer-2
+      EUREKA_SERVER_LIST: http://eureka-peer-1:8761/eureka/
+    ports:
+      - 8762:8761
+    networks:
+      - tpam
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+networks:
+  tpam:
+    external: true
